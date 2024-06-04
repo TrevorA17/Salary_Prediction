@@ -57,3 +57,24 @@ library(e1071)
 svm_model <- svm(y ~ ., data = X, kernel = "radial")
 print("Support Vector Regression Model:")
 print(svm_model)
+
+# Assuming the dataset is already loaded into R as "employee_salary_data"
+
+# Split the data into features (X) and target (y)
+X <- employee_salary_data_clean[, c("Age", "Gender", "Education_Level", "Job_Title", "Years_of_Experience")]
+y <- employee_salary_data_clean$Salary
+
+# Encode categorical variables (Gender and Education_Level)
+X$Gender <- as.numeric(X$Gender == "Male")
+X$Education_Level <- as.numeric(X$Education_Level)
+
+# Create a list of models
+models <- list(
+  Linear_Regression = lm(y ~ ., data = X),
+  Random_Forest = randomForest(y ~ ., data = X),
+  SVR = svm(y ~ ., data = X, kernel = "radial")
+)
+
+resamps <- resamples(list(lm,rf,svm))
+
+
