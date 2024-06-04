@@ -86,3 +86,34 @@ correlation_matrix <- cor(employee_salary_data[c("Age", "Years_of_Experience", "
 print("Correlation Matrix:")
 print(correlation_matrix)
 
+# Perform the one-way ANOVA test
+anova_result <- aov(Salary ~ Education_Level, data = employee_salary_data)
+
+# Print the ANOVA summary
+summary(anova_result)
+
+library(ggplot2)
+
+# Assuming employee_salary_data is already loaded
+ggplot(employee_salary_data, aes(x = Age)) +
+  geom_histogram(binwidth = 5, fill = "skyblue", color = "black") +
+  labs(title = "Distribution of Age", x = "Age", y = "Count")
+
+ggplot(employee_salary_data, aes(x = Salary)) +
+  geom_histogram(binwidth = 1000, fill = "salmon", color = "black") +
+  labs(title = "Distribution of Salary", x = "Salary", y = "Count")
+
+ggplot(employee_salary_data, aes(x = Gender)) +
+  geom_bar(fill = "lightgreen") +
+  labs(title = "Gender Distribution", x = "Gender", y = "Count")
+
+ggplot(employee_salary_data, aes(x = "", y = Years_of_Experience)) +
+  geom_boxplot(fill = "orchid", color = "black") +
+  labs(title = "Years of Experience", x = "", y = "Years of Experience")
+
+ggplot(employee_salary_data, aes(x = Years_of_Experience, y = Salary, color = Education_Level)) +
+  geom_point() +
+  labs(title = "Salary vs. Years of Experience",
+       x = "Years of Experience", y = "Salary",
+       color = "Education Level")
+

@@ -20,3 +20,4 @@ View(employee_salary_data)
 # Check for missing values
 missing_values <- sapply(employee_salary_data, function(x) sum(is.na(x)))
 print(missing_values)
+
