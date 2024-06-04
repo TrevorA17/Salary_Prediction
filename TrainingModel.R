@@ -1,3 +1,22 @@
+# Load dataset
+employee_salary_data <- read.csv("data/Salary_Data.csv", colClasses = c(
+  Age = "numeric",
+  Gender = "factor",
+  Education_Level = "factor",
+  Job_Title = "character",
+  Years_of_Experience = "numeric",
+  Salary = "numeric"
+))
+
+# Display the structure of the dataset
+str(employee_salary_data)
+
+# View the first few rows of the dataset
+head(employee_salary_data)
+
+# View the dataset in a separate viewer window
+View(employee_salary_data)
+
 library(caret)
 
 set.seed(42)  # For reproducibility
@@ -58,23 +77,9 @@ svm_model <- svm(y ~ ., data = X, kernel = "radial")
 print("Support Vector Regression Model:")
 print(svm_model)
 
-# Assuming the dataset is already loaded into R as "employee_salary_data"
+library(easystats)
 
-# Split the data into features (X) and target (y)
-X <- employee_salary_data_clean[, c("Age", "Gender", "Education_Level", "Job_Title", "Years_of_Experience")]
-y <- employee_salary_data_clean$Salary
-
-# Encode categorical variables (Gender and Education_Level)
-X$Gender <- as.numeric(X$Gender == "Male")
-X$Education_Level <- as.numeric(X$Education_Level)
-
-# Create a list of models
-models <- list(
-  Linear_Regression = lm(y ~ ., data = X),
-  Random_Forest = randomForest(y ~ ., data = X),
-  SVR = svm(y ~ ., data = X, kernel = "radial")
-)
-
-resamps <- resamples(list(lm,rf,svm))
+# Assuming you have a regression model (e.g., lm_model) and data (X, y)
+check_model(lm_model, data = X, y = y)
 
 
