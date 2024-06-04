@@ -30,3 +30,30 @@ print(paste("Cross-validation scores:", cv_scores))
 print(paste("Mean cross-validation RMSE:", mean(cv_scores)))
 
 print(model_cv)
+
+# Model Training
+
+# Split the data into features (X) and target (y)
+X <- employee_salary_data_clean[, c("Age", "Gender", "Education_Level", "Job_Title", "Years_of_Experience")]
+y <- employee_salary_data_clean$Salary
+
+# Encode categorical variables (Gender and Education_Level)
+X$Gender <- as.numeric(X$Gender == "Male")
+X$Education_Level <- as.numeric(X$Education_Level)
+
+# Model training using Linear Regression
+lm_model <- lm(y ~ ., data = X)
+print("Linear Regression Model:")
+print(lm_model)
+
+# Model training using Random Forest Regression
+library(randomForest)
+rf_model <- randomForest(y ~ ., data = X)
+print("Random Forest Regression Model:")
+print(rf_model)
+
+# Model training using Support Vector Regression
+library(e1071)
+svm_model <- svm(y ~ ., data = X, kernel = "radial")
+print("Support Vector Regression Model:")
+print(svm_model)
