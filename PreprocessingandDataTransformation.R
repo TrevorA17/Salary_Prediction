@@ -21,3 +21,11 @@ View(employee_salary_data)
 missing_values <- sapply(employee_salary_data, function(x) sum(is.na(x)))
 print(missing_values)
 
+# Assuming the dataset is already loaded into R as "employee_salary_data"
+
+# Remove rows with missing values
+employee_salary_data_clean <- na.omit(employee_salary_data)
+
+# Check for missing values again
+missing_values_clean <- sapply(employee_salary_data_clean, function(x) sum(is.na(x)))
+print(missing_values_clean)
