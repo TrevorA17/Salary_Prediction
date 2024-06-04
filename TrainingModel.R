@@ -21,3 +21,12 @@ for (i in 1:n_bootstraps) {
 }
 average_bootstrap_score <- mean(bootstrap_scores)
 print(paste("Average bootstrap score:", round(average_bootstrap_score, 4)))
+
+library(caret)  # For cross-validation
+model_cv <- train(Salary ~ ., data = train_data, method = "lm",
+                  trControl = trainControl(method = "cv", number = 5))
+cv_scores <- model_cv$results$RMSE
+print(paste("Cross-validation scores:", cv_scores))
+print(paste("Mean cross-validation RMSE:", mean(cv_scores)))
+
+print(model_cv)
