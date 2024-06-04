@@ -1,2 +1,2 @@
-# Salary_Prediction
-Predicting Salaries of employees at a company
+# Salary Prediction Project
+This project aims to predict employee salaries based on various features such as age, gender, education level, job title, and years of experience. We trained a linear regression model using historical salary data and saved it for future use. The provided Plumber API allows users to input relevant employee information and receive salary predictions. Whether you’re an HR professional, a job seeker, or a curious data enthusiast, this API can help estimate salaries and inform decision-making.
