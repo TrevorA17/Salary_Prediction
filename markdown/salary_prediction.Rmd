@@ -48,6 +48,233 @@ Refer to the APA 7th edition manual for rules on how to cite datasets: <https://
 # Understanding the Dataset (Exploratory Data Analysis (EDA))
 ## Load dataset
 ```{r Load dataset}
+# Load dataset
+employee_salary_data <- read.csv("Salary_Data.csv", colClasses = c(
+  Age = "numeric",
+  Gender = "factor",
+  Education_Level = "factor",
+  Job_Title = "character",
+  Years_of_Experience = "numeric",
+  Salary = "numeric"
+))
+
+# Display the structure of the dataset
+str(employee_salary_data)
+
+# View the first few rows of the dataset
+head(employee_salary_data)
+
+# View the dataset in a separate viewer window
+View(employee_salary_data)
+```
+
+## Measures of Frequency
+```{r MOF}
+# Measures of Frequency
+gender_frequency <- table(employee_salary_data$Gender)
+education_frequency <- table(employee_salary_data$Education_Level)
+job_title_frequency <- table(employee_salary_data$Job_Title)
+
+# Display frequency tables
+print("Frequency of Gender:")
+print(gender_frequency)
+print("Frequency of Education Level:")
+print(education_frequency)
+print("Frequency of Job Title:")
+print(job_title_frequency)
+```
+
+## Measures of Central Tendency
+```{r MOCT}
+# Measures of Central Tendency
+age_mean <- mean(employee_salary_data$Age)
+age_median <- median(employee_salary_data$Age)
+years_of_exp_mean <- mean(employee_salary_data$Years_of_Experience)
+years_of_exp_median <- median(employee_salary_data$Years_of_Experience)
+salary_mean <- mean(employee_salary_data$Salary)
+salary_median <- median(employee_salary_data$Salary)
+
+# Display measures of central tendency
+print("Measures of Central Tendency:")
+print(paste("Mean Age:", age_mean))
+print(paste("Median Age:", age_median))
+print(paste("Mean Years of Experience:", years_of_exp_mean))
+print(paste("Median Years of Experience:", years_of_exp_median))
+print(paste("Mean Salary:", salary_mean))
+print(paste("Median Salary:", salary_median))
+```
+
+## Measures of Relationship
+```{r MOR}
+# Measures of Relationship
+correlation_matrix <- cor(employee_salary_data[c("Age", "Years_of_Experience", "Salary")])
+
+# Display correlation matrix
+print("Correlation Matrix:")
+print(correlation_matrix)
+```
+
+## ANOVA
+```{r ANOVA}
+# Perform the one-way ANOVA test
+anova_result <- aov(Salary ~ Education_Level, data = employee_salary_data)
+
+# Print the ANOVA summary
+summary(anova_result)
+```
+
+## Plots
+```{r Plots}
+library(ggplot2)
+
+# Assuming employee_salary_data is already loaded
+ggplot(employee_salary_data, aes(x = Age)) +
+  geom_histogram(binwidth = 5, fill = "skyblue", color = "black") +
+  labs(title = "Distribution of Age", x = "Age", y = "Count")
+
+ggplot(employee_salary_data, aes(x = Salary)) +
+  geom_histogram(binwidth = 1000, fill = "salmon", color = "black") +
+  labs(title = "Distribution of Salary", x = "Salary", y = "Count")
+
+ggplot(employee_salary_data, aes(x = Gender)) +
+  geom_bar(fill = "lightgreen") +
+  labs(title = "Gender Distribution", x = "Gender", y = "Count")
+
+ggplot(employee_salary_data, aes(x = "", y = Years_of_Experience)) +
+  geom_boxplot(fill = "orchid", color = "black") +
+  labs(title = "Years of Experience", x = "", y = "Years of Experience")
+
+ggplot(employee_salary_data, aes(x = Years_of_Experience, y = Salary, color = Education_Level)) +
+  geom_point() +
+  labs(title = "Salary vs. Years of Experience",
+       x = "Years of Experience", y = "Salary",
+       color = "Education Level")
+
+```
+
+# Preprocessing and Data Transformation
+## Missing Values
+```{r Missing Values}
+# Check for missing values
+missing_values <- sapply(employee_salary_data, function(x) sum(is.na(x)))
+print(missing_values)
+
+```
+
+## Remove Missing Values
+```{r Remove Missing values}
+# Assuming the dataset is already loaded into R as "employee_salary_data"
+
+# Remove rows with missing values
+employee_salary_data_clean <- na.omit(employee_salary_data)
+
+# Check for missing values again
+missing_values_clean <- sapply(employee_salary_data_clean, function(x) sum(is.na(x)))
+print(missing_values_clean)
+```
+
+# Model Training
+## Data Splitting
+```{r Data Splitting}
+library(caret)
+
+set.seed(42)  # For reproducibility
+#data splitting
+train_indices <- sample(1:nrow(employee_salary_data_clean), 0.8 * nrow(employee_salary_data_clean))
+train_data <- employee_salary_data_clean[train_indices, ]
+test_data <- employee_salary_data_clean[-train_indices, ]
+
+dim(train_data)
+dim(test_data)
+```
+
+## Bootstrapping
+```{r Bootstrapping}
+#Bootstrapping
+library(boot)
+n_bootstraps <- 1000
+bootstrap_scores <- numeric(n_bootstraps)
+for (i in 1:n_bootstraps) {
+  boot_indices <- sample(1:nrow(train_data), replace = TRUE)
+  boot_train_data <- train_data[boot_indices, ]
+  model <- lm(Salary ~ ., data = boot_train_data)
+  bootstrap_scores[i] <- summary(model)$r.squared
+}
+average_bootstrap_score <- mean(bootstrap_scores)
+print(paste("Average bootstrap score:", round(average_bootstrap_score, 4)))
+```
+
+## Cross-validation
+```{r Cross-validation}
+library(caret)  # For cross-validation
+model_cv <- train(Salary ~ ., data = train_data, method = "lm",
+                  trControl = trainControl(method = "cv", number = 5))
+cv_scores <- model_cv$results$RMSE
+print(paste("Cross-validation scores:", cv_scores))
+print(paste("Mean cross-validation RMSE:", mean(cv_scores)))
+
+print(model_cv)
+```
+
+## Model Training
+```{r Model Training}
+# Model Training
+
+# Split the data into features (X) and target (y)
+X <- employee_salary_data_clean[, c("Age", "Gender", "Education_Level", "Job_Title", "Years_of_Experience")]
+y <- employee_salary_data_clean$Salary
+
+# Encode categorical variables (Gender and Education_Level)
+X$Gender <- as.numeric(X$Gender == "Male")
+X$Education_Level <- as.numeric(X$Education_Level)
+
+# Model training using Linear Regression
+lm_model <- lm(y ~ ., data = X)
+print("Linear Regression Model:")
+print(lm_model)
+
+# Model training using Random Forest Regression
+library(randomForest)
+rf_model <- randomForest(y ~ ., data = X)
+print("Random Forest Regression Model:")
+print(rf_model)
+
+# Model training using Support Vector Regression
+library(e1071)
+svm_model <- svm(y ~ ., data = X, kernel = "radial")
+print("Support Vector Regression Model:")
+print(svm_model)
+```
+
+## Stats
+```{r}
+library(easystats)
+
+# Assuming you have a regression model (e.g., lm_model) and data (X, y)
+check_model(lm_model, data = X, y = y)
+
+```
+
+# Saving Model
+```{r Saving Model}
+# Load the saved linear regression model
+loaded_lm_model <- readRDS("./models/saved_lm_model.rds")
+
+# Prepare new data for prediction
+new_data <- data.frame(
+  Age = as.numeric(30),
+  Gender = factor("Female"),
+  Education_Level = factor("PhD"),
+  Job_Title = "Software Engineer",
+  Years_of_Experience = as.numeric(10),
+  Salary = as.numeric(1000)
+)
+
+# Use the loaded model to make predictions
+predictions_loaded_model <- predict(loaded_lm_model, newdata = new_data)
+
+# Print predictions
+print(predictions_loaded_model)
 
 ```
 
